@@ -1,14 +1,14 @@
-"""Advent of Code 2024 - Unit tests for day 1 tasks"""
+"""Advent of Code 2024 - Unit tests for day 2 tasks"""
 from src.util import get_lines
-from ..day01 import part_one, part_two
+from ..day02 import part_one, part_two
 
 
-example_data = """3   4
-4   3
-2   5
-1   3
-3   9
-3   3""".split("\n")
+example_data = """7 6 4 2 1
+1 2 7 8 9
+9 7 6 2 1
+1 3 2 4 5
+8 6 4 4 1
+1 3 6 7 9""".split("\n")
 
 def test_part_one() -> None:
     """
@@ -19,8 +19,8 @@ def test_part_one() -> None:
     Returns:
         None
     """
-    assert part_one(example_data) == 11
-    assert part_one(get_lines("day01")) == 1889772
+    assert part_one(example_data) == 2
+    assert part_one(get_lines("day02")) == 670
 
 
 def test_part_two() -> None:
@@ -32,5 +32,5 @@ def test_part_two() -> None:
     Returns:
         None
     """
-    assert part_two(example_data) == 31
-    assert part_two(get_lines("day01")) == 23228917
+    assert part_two(example_data) == 4
+    assert part_two(get_lines("day02")) == 700
