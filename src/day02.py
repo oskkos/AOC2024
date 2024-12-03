@@ -1,4 +1,4 @@
-"""Advent of Code 2024 - Day 1 tasks"""
+"""Advent of Code 2024 - Day 2 tasks"""
 
 if not __package__:
     import util  # type: ignore
@@ -140,4 +140,4 @@ def check_is_safe(levels: list[int]) -> bool:
 if __name__ == "__main__":
     file_lines = util.get_lines("day02")
     print("Part one: " + str(part_one(file_lines)))
-    # print("Part two: " + str(part_two(file_lines)))
+    print("Part two: " + str(part_two(file_lines)))
