@@ -1,5 +1,7 @@
 """Advent of Code 2024 - Day 5 tasks"""
 
+from collections import defaultdict
+
 if not __package__:
     import util  # type: ignore
 else:
@@ -154,20 +156,18 @@ def get_rules_and_updates(
     """
     Parses a list of strings to extract rules and updates.
     """
-    rules: dict[str, dict[str, bool]] = {}
-    values: dict[str, dict[str, bool]] = {}
+    rules: dict[str, dict[str, bool]] = defaultdict(dict)
+    values: dict[str, dict[str, bool]] = defaultdict(dict)
     updates = []
+
     for line in lines:
         if "|" in line:
-            [key, value] = line.split("|")
-            if key not in rules:
-                rules[key] = {}
+            key, value = line.split("|")
             rules[key][value] = True
-            if value not in values:
-                values[value] = {}
             values[value][key] = True
         elif line.strip():
             updates.append(line.strip().split(","))
+
     return rules, updates, values
 
 
@@ -186,9 +186,12 @@ def get_correct_and_incorrect_updates(
         correct = True
         for i in range(len(update) - 1):
             for j in range(i + 1, len(update)):
-                if not (update[i] in rules and update[j] in rules[update[i]]):
-                    correct = False
-                    break
+                if update[i] in rules and update[j] in rules[update[i]]:
+                    continue
+                correct = False
+                break
+            if not correct:
+                break
         if correct:
             correct_updates.append(update)
         else:
@@ -208,21 +211,12 @@ def sort_update(update: list[str], values: dict[str, dict[str, bool]]) -> list[s
     Sorts an update based on given rules.
     """
     update_sorted: list[str] = []
-    while len(update_sorted) < len(update):
-        for i, char in enumerate(update):
-
-            remainder = update[:i] + update[i + 1 :]
-            remainder = [c for c in remainder if c not in update_sorted]
-
-            if not char in values and not char in update_sorted:
+    remaining = set(update)
+    while remaining:
+        for char in list(remaining):
+            if char not in values or all(c not in values[char] for c in remaining):
                 update_sorted.append(char)
-
-            elif (
-                char in values
-                and not any(c in values[char] for c in remainder)
-                and not char in update_sorted
-            ):
-                update_sorted.append(char)
+                remaining.remove(char)
     return update_sorted
 
 
