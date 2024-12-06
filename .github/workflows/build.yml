@@ -29,4 +29,4 @@ jobs:
           pylint --enable=all --disable=import-error **/*.py
     - name: Test with pytest
       run: |
-        pytest --cov
+        pytest --cov --durations=0 --durations-min=0.2

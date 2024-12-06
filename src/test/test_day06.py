@@ -41,5 +41,4 @@ def test_part_two() -> None:
         None
     """
     assert part_two(example_data) == 6
-    # too slow, took almost 5 minutes
-    # assert part_two(get_lines("day06")) == 1309
+    assert part_two(get_lines("day06")) == 1309

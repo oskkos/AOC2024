@@ -1,7 +1,6 @@
 """Advent of Code 2024 - Day 6 tasks"""
 
 from collections import defaultdict
-from copy import deepcopy
 
 
 if not __package__:
@@ -134,27 +133,41 @@ def part_two(lines: list[str]) -> int:
     You need to get the guard stuck in a loop by adding a single new obstruction. How many different
     positions could you choose for this obstruction?
     """
-    initial_coords, initial_position = lines_to_coords(lines)
+    coords, initial_position = lines_to_coords(lines)
+
+    # Run the simulation to find the path of the guard
+    position = initial_position
+    direction = "up"
+    while (0 <= position[0] < len(lines[0])) and (0 <= position[1] < len(lines)):
+        coords[position[0]][
+            position[1]
+        ] = "X"  # mark the path with X so no need to check all coords in next phase
+        position, direction = get_next_position_and_direction(
+            position, direction, coords
+        )
 
     blocked = 0
-    for x, col in initial_coords.items():
+    for col in coords.values():
         for y, char in col.items():
-            if char == ".":
-                steps = set()
-                direction = "up"
-                position = initial_position
-                coords = deepcopy(initial_coords)
-                coords[x][y] = "#"
-                while (0 <= position[0] < len(lines[0])) and (
-                    0 <= position[1] < len(lines)
-                ):
-                    if (position, direction) in steps:
-                        blocked += 1
-                        break
-                    steps.add((position, direction))
-                    position, direction = get_next_position_and_direction(
-                        position, direction, coords
-                    )
+            # Try to block only the positions where the guard has been initially
+            if char != "X":
+                continue
+            steps = set()
+            direction = "up"
+            position = initial_position
+            col[y] = "#"
+            while (0 <= position[0] < len(lines[0])) and (
+                0 <= position[1] < len(lines)
+            ):
+                if (position, direction) in steps:
+                    blocked += 1
+                    break
+                steps.add((position, direction))
+                position, direction = get_next_position_and_direction(
+                    position, direction, coords
+                )
+            # restore back to original state
+            col[y] = "X"
     return blocked
 
 
