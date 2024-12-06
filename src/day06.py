@@ -9,6 +9,9 @@ else:
     from . import util
 
 
+next_coord_map = {"up": (0, -1), "right": (1, 0), "down": (0, 1), "left": (-1, 0)}
+next_direction_map = {"up": "right", "right": "down", "down": "left", "left": "up"}
+
 def part_one(lines: list[str]) -> int:
     """
         --- Day 6: Guard Gallivant ---
@@ -71,39 +74,19 @@ def part_one(lines: list[str]) -> int:
     Predict the path of the guard. How many distinct positions will the guard visit before leaving
     the mapped area?
     """
-    position = (0, 0)
+    coords, position = lines_to_coords(lines)
     direction = "up"
-    next_coord_map = {"up": (0, -1), "right": (1, 0), "down": (0, 1), "left": (-1, 0)}
-    next_direction_map = {"up": "right", "right": "down", "down": "left", "left": "up"}
-    coords = defaultdict(dict)
-    for y, line in enumerate(lines):
-        for x, char in enumerate(line):
-            coords[x][y] = char
-            if char == "^":
-                position = (x, y)
 
     while (0 <= position[0] < len(lines[0])) and (0 <= position[1] < len(lines)):
         coords[position[0]][position[1]] = "X"
-
-        next_position = (
-            position[0] + next_coord_map[direction][0],
-            position[1] + next_coord_map[direction][1],
+        position, direction = get_next_position_and_direction(
+            position, direction, coords
         )
-        if (
-            next_position[0] not in coords
-            or next_position[1] not in coords[next_position[0]]
-        ):
-            break
-
-        if coords[next_position[0]][next_position[1]] == "#":
-            direction = next_direction_map[direction]
-        else:
-            position = next_position
 
     visited_positions = 0
     for row in coords.values():
-        for position in row.values():
-            if position == "X":
+        for char in row.values():
+            if char == "X":
                 visited_positions += 1
     return visited_positions
 
@@ -114,6 +97,49 @@ def part_two(lines: list[str]) -> int:
     """
 
     return len(lines)
+
+
+def lines_to_coords(
+    lines: list[str],
+) -> tuple[dict[int, dict[int, str]], tuple[int, int]]:
+    """
+    Converts a list of strings into a dictionary of coordinates and identifies
+    the starting position.
+    """
+    start = (-1, -1)
+    coords: dict[int, dict[int, str]] = defaultdict(dict)
+    for y, line in enumerate(lines):
+        for x, char in enumerate(line):
+            coords[x][y] = char
+            if char == "^":
+                start = (x, y)
+    return coords, start
+
+
+def get_next_position_and_direction(
+    position: tuple[int, int], direction: str, coords: dict[int, dict[int, str]]
+) -> tuple[tuple[int, int], str]:
+    """
+    Calculate the next position and direction based on the current position,
+    direction, and coordinates.
+    """
+    next_position = (
+        position[0] + next_coord_map[direction][0],
+        position[1] + next_coord_map[direction][1],
+    )
+
+    if (
+        next_position[0] not in coords
+        or next_position[1] not in coords[next_position[0]]
+    ):
+        return next_position, direction
+
+    if coords[next_position[0]][next_position[1]] == "#":
+        direction = next_direction_map[direction]
+    else:
+        position = next_position
+
+    return position, direction
 
 
 if __name__ == "__main__":
