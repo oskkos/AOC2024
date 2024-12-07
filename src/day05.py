@@ -221,6 +221,6 @@ def sort_update(update: list[str], values: dict[str, dict[str, bool]]) -> list[s
 
 
 if __name__ == "__main__":
-    file_lines = util.get_lines("day02")
+    file_lines = util.get_lines("day05")
     print("Part one: " + str(part_one(file_lines)))
     print("Part two: " + str(part_two(file_lines)))
