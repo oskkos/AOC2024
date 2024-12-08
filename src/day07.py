@@ -1,4 +1,4 @@
-"""Advent of Code 2024 - Day 6 tasks"""
+"""Advent of Code 2024 - Day 7 tasks"""
 
 from itertools import product
 import re
