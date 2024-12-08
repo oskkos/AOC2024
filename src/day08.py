@@ -110,13 +110,60 @@ def part_one(lines: list[str]) -> int:
 
 def part_two(lines: list[str]) -> int:
     """
-    part two
+    --- Part Two ---
+    Watching over your shoulder as you work, one of The Historians asks if you took the effects
+    of resonant harmonics into your calculations.
+
+    Whoops!
+
+    After updating your model, it turns out that an antinode occurs at any grid position exactly in
+    line with at least two antennas of the same frequency, regardless of distance. This means
+    that some of the new antinodes will occur at the position of each antenna (unless that antenna
+    is the only one of its frequency).
+
+    So, these three T-frequency antennas now create many antinodes:
+
+    T....#....
+    ...T......
+    .T....#...
+    .........#
+    ..#.......
+    ..........
+    ...#......
+    ..........
+    ....#.....
+    ..........
+    In fact, the three T-frequency antennas are all exactly in line with two antennas, so they are
+    all also antinodes! This brings the total number of antinodes in the above example to 9.
+
+    The original example now has 34 antinodes, including the antinodes that appear on every antenna:
+
+    ##....#....#
+    .#.#....0...
+    ..#.#0....#.
+    ..##...0....
+    ....0....#..
+    .#...#A....#
+    ...#..#.....
+    #....#.#....
+    ..#.....A...
+    ....#....A..
+    .#........#.
+    ...#......##
+    Calculate the impact of the signal using this updated model. How many unique locations within
+    the bounds of the map contain an antinode?
     """
-    return len(lines)
+    antinodes = set()
+    for row, line in enumerate(lines):
+        for col, char in enumerate(line):
+            if char == ".":
+                continue
+            antinodes.update(check_possibilities(lines, row, col, char, True))
+    return len(antinodes)
 
 
 def check_possibilities(
-    lines: list[str], row: int, col: int, char: str
+    lines: list[str], row: int, col: int, char: str, part2: bool = False
 ) -> set[tuple[int, int]]:
     """
     Check possible positions in a grid based on a given character.
@@ -135,12 +182,21 @@ def check_possibilities(
             col_diff = col2 - col
             if not row_diff and not col_diff:
                 continue
-            options = get_options(row_diff, col_diff)
-            for option in options:
-                if option[0] < 0 or option[1] < 0:
-                    pass  # continue
-                if in_range(lines, row + option[0], col + option[1]):
-                    antinodes.add((row + option[0], col + option[1]))
+
+            if part2:
+                options = get_options2(
+                    row_diff, col_diff, row, col, (len(lines), len(lines[0]))
+                )
+                for option in options:
+                    if option[0] < 0 or option[1] < 0:
+                        pass  # continue
+                    if in_range(lines, option[0], option[1]):
+                        antinodes.add((option[0], option[1]))
+            else:
+                options = get_options(row_diff, col_diff)
+                for option in options:
+                    if in_range(lines, row + option[0], col + option[1]):
+                        antinodes.add((row + option[0], col + option[1]))
     return antinodes
 
 
@@ -176,6 +232,40 @@ def get_options(row_diff: int, col_diff: int) -> list[tuple[int, int]]:
             (row_diff * -1, col_diff * -1),
             (row_diff * 2, col_diff * 2),
         ]
+    return options
+
+
+def get_options2(
+    row_diff: int, col_diff: int, row: int, col: int, dimensions: tuple[int, int]
+) -> list[tuple[int, int]]:
+    """
+    Generate a list of option tuples based on the differences in row and column values.
+
+    This function takes two integer inputs, `row_diff` and `col_diff`, and returns a list of tuples.
+    Each tuple contains two integers that represent possible options derived from the input
+    differences. The options are calculated based on specific conditions related to the signs
+    of `row_diff` and `col_diff`.
+    """
+
+    options: list[tuple[int, int]] = []
+    options.append((row, col))
+
+    if not row_diff and not col_diff:
+        return options
+    descending_row = row
+    descending_col = col
+    while 0 <= descending_row <= dimensions[0] and 0 <= descending_col <= dimensions[1]:
+        descending_row = descending_row - row_diff
+        descending_col = descending_col - col_diff
+        options.append((descending_row, descending_col))
+
+    ascending_row = row
+    ascending_col = col
+    while 0 <= ascending_row <= dimensions[0] and 0 <= ascending_col <= dimensions[1]:
+        ascending_row = ascending_row + row_diff
+        ascending_col = ascending_col + col_diff
+        options.append((ascending_row, ascending_col))
+
     return options
 
 
