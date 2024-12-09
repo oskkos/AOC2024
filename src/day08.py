@@ -270,6 +270,6 @@ def get_options2(
 
 
 if __name__ == "__main__":
-    file_lines = util.get_lines("day07")
+    file_lines = util.get_lines("day08")
     print("Part one: " + str(part_one(file_lines)))
     print("Part two: " + str(part_two(file_lines)))
